@@ -1,0 +1,43 @@
+{
+  "temperature-rrd": "temperatures.rrd",
+
+  "rras": [
+    {
+      "type": "AVERAGE",
+      "xff": 0.5,
+      "steps": 1,
+      "rows": 525600
+    },
+    {
+      "type": "AVERAGE",
+      "xff": 0.5,
+      "steps": 1,
+      "rows": 288
+    },
+    {
+      "type": "AVERAGE",
+      "xff": 0.5,
+      "steps": 12,
+      "rows": 168
+    },
+    {
+      "type": "AVERAGE",
+      "xff": 0.5,
+      "steps": 12,
+      "rows": 720
+    },
+    {
+      "type": "AVERAGE",
+      "xff": 0.5,
+      "steps": 288,
+      "rows": 365
+    }
+  ],
+
+  "servers": [
+    {
+      "hostname": "localhost",
+      "port": 5001
+    }
+  ]
+}
