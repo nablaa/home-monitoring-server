@@ -9,6 +9,7 @@ import requests
 import subprocess
 import tempfile
 import sys
+import time
 from lxml import etree as ET
 
 
@@ -36,15 +37,20 @@ def init_logging(log_level):
 
 def run_monitoring_server(config):
     log.info("Starting monitoring server")
+    interval = config["polling-interval-seconds"]
+    log.info("Polling every %d seconds", interval)
 
-    # TODO loop with interval from argparse
-    temperature_datas = loop_temperature_servers(config)
-    if temperature_datas is not {}:
-        update_data_to_rrd(config["temperature-rrd"], config["rras"],
-                           temperature_datas)
+    while True:
+        temperature_datas = loop_temperature_servers(config)
+        if temperature_datas is not {}:
+            update_data_to_rrd(config["temperature-rrd"], config["rras"],
+                               temperature_datas)
+        log.debug("Update done")
+        time.sleep(interval)
 
 
 def loop_temperature_servers(config):
+    log.debug("Reading temperature data from servers")
     temperature_datas = {}
     for server in config["servers"]:
         hostname = server["hostname"]

@@ -39,5 +39,7 @@
       "hostname": "localhost",
       "port": 5001
     }
-  ]
+  ],
+
+  "polling-interval-seconds": 10
 }
