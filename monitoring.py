@@ -76,7 +76,7 @@ def update_data_to_rrd(filename, rras, data):
         log.debug("Re-opening RRD after data sources were added")
         rrd = open_or_create_rrd_database_if_not_existing(filename, rras, data_source_names)
 
-    # TODO add data
+    add_datapoints_to_rrd(rrd, data)
 
 
 def open_or_create_rrd_database_if_not_existing(filename, rras, data_source_names):
@@ -132,7 +132,7 @@ def add_missing_data_sources(filename, rrd, data_source_names):
 
 def get_missing_data_source_names(rrd, data_source_names):
     rrd_info = rrd.info()
-    return set(data_source_names) - get_data_source_names_from_info(rrd_info)
+    return set(data_source_names) - set(get_data_source_names_from_info(rrd_info))
 
 
 def get_data_source_names_from_info(rrd_info):
@@ -194,15 +194,16 @@ def get_data_source_names_from_info(rrd_info):
     ...         'rrd_version': u'0003',
     ...         'step': 300L,
     ...         }
-    >>> sorted(list(get_data_source_names_from_info(info)))
-    ['mytemp1', 'mytemp2']
+    >>> get_data_source_names_from_info(info)
+    ['mytemp2', 'mytemp1']
     """
-    names = set()
+    names = {}
     for field in rrd_info.keys():
         if field.startswith("ds[") and field.endswith("].index"):
             name = field.split("ds[")[1].split("].index")[0]
-            names.add(name)
-    return names
+            names[name] = rrd_info[field]
+
+    return [n for n, index in sorted(names.items(), key=lambda x: x[1])]
 
 
 def add_data_sources_to_rrd(filename, data_sources):
@@ -296,6 +297,23 @@ def add_data_sources_to_rrd_xml_file(rrd_xml_file, data_sources):
     xml.write(tmp_xml)
     tmp_xml.seek(0)
     return tmp_xml
+
+
+def add_datapoints_to_rrd(rrd, datapoints):
+    log.debug("Adding data '%s' to RRD", datapoints)
+    rrd_info = rrd.info()
+    ds_names = get_data_source_names_from_info(rrd_info)
+
+    values = []
+    for ds_name in ds_names:
+        if ds_name in datapoints:
+            values.append("%s" % datapoints[ds_name])
+        else:
+            values.append("U")
+
+    value_str = "N:" + ":".join(values)
+    log.debug("Updating RRD with Value str: %s", value_str)
+    rrd.update([value_str])
 
 
 if __name__ == "__main__":
