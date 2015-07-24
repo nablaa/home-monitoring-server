@@ -2,6 +2,7 @@
 
 import os.path
 import time
+import ssl
 from functools import wraps
 from flask import Flask
 from flask import render_template
@@ -77,7 +78,10 @@ def get_temperature_detailed(name=None):
 
 
 if __name__ == "__main__":
-    app.debug = True
-    http_server = HTTPServer(WSGIContainer(app))
+    app.debug = False
+    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_context.load_cert_chain(os.path.join(THIS_DIR, "server.crt"),
+                                os.path.join(THIS_DIR, "server.key"))
+    http_server = HTTPServer(WSGIContainer(app), ssl_options=ssl_context)
     http_server.listen(PORT)
     IOLoop.instance().start()
