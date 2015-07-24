@@ -8,6 +8,9 @@ from flask import render_template
 from flask import request
 from flask import Response
 from flask import abort
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
 
 PORT = 12300
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -75,4 +78,6 @@ def get_temperature_detailed(name=None):
 
 if __name__ == "__main__":
     app.debug = True
-    app.run("0.0.0.0", port=PORT)
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(PORT)
+    IOLoop.instance().start()
