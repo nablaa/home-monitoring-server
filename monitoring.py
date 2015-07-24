@@ -10,6 +10,7 @@ import subprocess
 import tempfile
 import sys
 import time
+import datetime
 from lxml import etree as ET
 
 
@@ -41,6 +42,15 @@ def run_monitoring_server(config):
     log.info("Polling every %d seconds", interval)
 
     while True:
+        if check_date_correctness():
+            # If this is run on Raspberry Pi, the clock might be in date
+            # 1st January 1970. We don't want to do any RRD database updates
+            # in that case as it will mess things up. Instead we wait until
+            # NTP updates the time to be correct.
+            log.error("Śkipping data update due to wrong date")
+            time.sleep(interval)
+            continue
+
         temperature_datas = loop_temperature_servers(config)
         if temperature_datas is not {}:
             update_data_to_rrd(config["temperature-rrd"], config["rras"],
@@ -320,6 +330,14 @@ def add_datapoints_to_rrd(rrd, datapoints):
     value_str = "N:" + ":".join(values)
     log.debug("Updating RRD with Value str: %s", value_str)
     rrd.update([value_str])
+
+
+def check_date_correctness():
+    now = datetime.datetime.now()
+    if now.year < 2000:
+        log.error("Invalid time, looks like we are in the past (%s)", now)
+        return True
+    return False
 
 
 if __name__ == "__main__":
