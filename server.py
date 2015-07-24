@@ -3,6 +3,7 @@
 import os.path
 import time
 import ssl
+from passlib.hash import sha256_crypt
 from functools import wraps
 from flask import Flask
 from flask import render_template
@@ -22,12 +23,15 @@ app = Flask(__name__)
 # correctly due to browser caching.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 60
 
+with open(os.path.join(THIS_DIR, "password")) as f:
+    password_hash = f.read().strip()
+
 
 def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return username == 'admin' and password == 'secret'
+    return username == 'viewer' and sha256_crypt.verify(password, password_hash)
 
 
 def authenticate():
