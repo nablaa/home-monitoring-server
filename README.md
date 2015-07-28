@@ -10,7 +10,7 @@ Edit `config.json` file to contain proper data servers.
 
 Create password hash:
 
-    python -c 'from passlib.hash import sha256_crypt; print(sha256_crypt.encrypt("MYPASSWORD"))' > passwor
+    python -c 'from passlib.hash import sha256_crypt; print(sha256_crypt.encrypt("MYPASSWORD"))' > password
 
 Create (self-signed) certificate for HTTPS:
 
