@@ -1,0 +1,6 @@
+flask==0.10.1
+lxml==3.4.4
+requests==2.7.0
+rrdtool==0.1.1
+tornado==4.2.1
+passlib==1.6.2
