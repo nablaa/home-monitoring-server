@@ -52,7 +52,7 @@ def run_monitoring_server(config):
             continue
 
         temperature_datas = loop_temperature_servers(config)
-        if temperature_datas is not {}:
+        if temperature_datas != {}:
             update_data_to_rrd(config["temperature-rrd"], config["rras"],
                                temperature_datas)
         log.debug("Update done")
@@ -83,7 +83,7 @@ def read_server_temperature_data(hostname, port):
 
 
 def update_data_to_rrd(filename, rras, data):
-    log.debug("Updating data to RRD")
+    log.debug("Updating data to RRD. Data: %s", data)
     data_source_names = data.keys()
     rrd = open_or_create_rrd_database_if_not_existing(filename, rras, data_source_names)
     was_added = add_missing_data_sources(filename, rrd, data_source_names)
