@@ -4,7 +4,8 @@
 
 ### Configuring data collection server
 
-Edit `config.json` file to contain proper data servers.
+Create config file (e.g. `config.json`) that contains configuration of data
+collection servers. Take a look at `example_config.json` for an example.
 
 ### Configuring web server
 
